@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 from compiler import copy_static
-from generate_page import generate_page
+from generate_page import generate_pages_recursive
 
 def main():
     # Configure logging
@@ -19,12 +19,8 @@ def main():
     # Copy static files (this also cleans public directory)
     copy_static()
     
-    # Generate main page
-    generate_page(
-        content_dir / "index.md",
-        template_path,
-        public_dir / "index.html"
-    )
+    # Generate all pages recursively
+    generate_pages_recursive(content_dir, template_path, public_dir)
 
 if __name__ == "__main__":
     main()

@@ -95,43 +95,60 @@ def quote_to_html_node(text: str) -> HTMLNode:
 def list_item_to_html_node(text: str) -> HTMLNode:
     """
     Convert a single list item to an HTMLNode.
-    
-    Args:
-        text (str): The list item text without the marker
-        
-    Returns:
-        HTMLNode: A list item node
+    Expects text without list markers.
     """
-    # Remove list markers (*, -, or number.)
-    content = text.lstrip("*-0123456789. ").strip()
-    children = text_to_children(content)
+    # No need to strip markers - they're already removed
+    children = text_to_children(text.strip())
     return ParentNode("li", children)
 
 def unordered_list_to_html_node(text: str) -> HTMLNode:
     """
     Convert an unordered list block to an HTMLNode.
-    
-    Args:
-        text (str): The full list text with * or - markers
-        
-    Returns:
-        HTMLNode: A ul node containing li nodes
+    Preprocesses list markers before passing to item processor.
     """
-    items = [line.strip() for line in text.split("\n")]
+    items = []
+    for line in text.split("\n"):
+        line = line.strip()
+        # Remove marker here, so list_item_to_html_node gets clean text
+        if line.startswith(('* ', '- ')):
+            items.append(line[2:])
+        else:
+            items.append(line)
+            
     children = [list_item_to_html_node(item) for item in items]
     return ParentNode("ul", children)
 
 def ordered_list_to_html_node(text: str) -> HTMLNode:
     """
     Convert an ordered list block to an HTMLNode.
+    Properly preprocesses number markers for list items.
     
     Args:
-        text (str): The full list text with number markers
+        text (str): The full list text with number markers (e.g., "1. First\n2. Second")
         
     Returns:
         HTMLNode: An ol node containing li nodes
+        
+    Example:
+        >>> text = "1. First item\\n2. Second item"
+        >>> node = ordered_list_to_html_node(text)
+        >>> node.to_html()
+        '<ol><li>First item</li><li>Second item</li></ol>'
     """
-    items = [line.strip() for line in text.split("\n")]
+    items = []
+    for line in text.split("\n"):
+        line = line.strip()
+        # Match any number followed by period and space
+        if line and line[0].isdigit():
+            # Find the position after the period and space
+            marker_end = line.find('. ')
+            if marker_end != -1:
+                items.append(line[marker_end + 2:])
+            else:
+                items.append(line)
+        else:
+            items.append(line)
+            
     children = [list_item_to_html_node(item) for item in items]
     return ParentNode("ol", children)
 

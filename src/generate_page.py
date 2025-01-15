@@ -41,3 +41,44 @@ def generate_page(from_path, template_path, dest_path):
     # Write final HTML to destination
     with open(dest_path, 'w') as f:
         f.write(final_html)
+
+
+def generate_pages_recursive(dir_path_content: Path, template_path: Path, dest_dir_path: Path):
+    """
+    Recursively generate HTML pages from markdown files while preserving directory structure.
+    
+    Args:
+        dir_path_content (Path): Source directory containing markdown files
+        template_path (Path): Path to HTML template file
+        dest_dir_path (Path): Destination directory for generated HTML files
+        
+    Example:
+        If content/ has structure:
+            content/
+            ├── index.md
+            └── majesty/
+                └── index.md
+                
+        It will generate:
+            public/
+            ├── index.html
+            └── majesty/
+                └── index.html
+    """
+    # Ensure the destination directory exists
+    dest_dir_path.mkdir(exist_ok=True)
+    
+    # Iterate through all files and directories
+    for entry in dir_path_content.iterdir():
+        if entry.is_file() and entry.suffix == '.md':
+            # Calculate relative path to maintain directory structure
+            rel_path = entry.relative_to(dir_path_content)
+            # Convert .md extension to .html
+            dest_file = dest_dir_path / rel_path.with_suffix('.html')
+            # Ensure destination subdirectories exist
+            dest_file.parent.mkdir(parents=True, exist_ok=True)
+            # Generate the HTML page
+            generate_page(str(entry), str(template_path), str(dest_file))
+        elif entry.is_dir():
+            # Recursively process subdirectories
+            generate_pages_recursive(entry, template_path, dest_dir_path / entry.name)
