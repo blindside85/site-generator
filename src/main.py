@@ -1,5 +1,7 @@
 import logging
+from pathlib import Path
 from compiler import copy_static
+from generate_page import generate_page
 
 def main():
     # Configure logging
@@ -8,10 +10,21 @@ def main():
         format='%(message)s'
     )
     
-    # Copy static files
+    # Get project root and define paths
+    project_root = Path(__file__).parent.parent
+    content_dir = project_root / "content"
+    template_path = project_root / "template.html"
+    public_dir = project_root / "public"
+    
+    # Copy static files (this also cleans public directory)
     copy_static()
     
-    # Future: Add markdown processing here
-    
+    # Generate main page
+    generate_page(
+        content_dir / "index.md",
+        template_path,
+        public_dir / "index.html"
+    )
+
 if __name__ == "__main__":
     main()

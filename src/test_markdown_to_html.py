@@ -46,7 +46,7 @@ class TestMarkdownToHTML(unittest.TestCase):
     def test_code_to_html_node(self):
         # Test code block
         text = "```\ndef hello():\n    print('Hello')\n```"
-        node = code_to_html_node(texblock_typest)
+        node = code_to_html_node(text)
         self.assertEqual(
             node.to_html(),
             "<pre><code>def hello():\n    print('Hello')</code></pre>"
