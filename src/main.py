@@ -1,8 +1,17 @@
-from textnode import TextNode, TextType
+import logging
+from compiler import copy_static
 
 def main():
-    node = TextNode("This is a text node", TextType.BOLD, "https://www.boot.dev")
-    print(node)
-
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(message)s'
+    )
+    
+    # Copy static files
+    copy_static()
+    
+    # Future: Add markdown processing here
+    
 if __name__ == "__main__":
     main()
