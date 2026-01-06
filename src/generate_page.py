@@ -80,7 +80,7 @@ def generate_pages_recursive(dir_path_content: Path, template_path: Path, dest_d
             # Ensure destination subdirectories exist
             dest_file.parent.mkdir(parents=True, exist_ok=True)
             # Generate the HTML page
-            generate_page(str(entry), str(template_path), str(dest_file), basepath)
+            generate_page(str(entry), str(template_path), str(dest_file), str(basepath))
         elif entry.is_dir():
             # Recursively process subdirectories
             generate_pages_recursive(entry, template_path, dest_dir_path / entry.name, basepath)

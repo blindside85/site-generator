@@ -54,18 +54,18 @@ def copy_static():
     current_dir = Path(__file__).parent
     project_root = current_dir.parent
     static_dir = project_root / "static"
-    public_dir = project_root / "public"
-    
+    public_dir = project_root / "docs"
+
     if not static_dir.exists():
         raise FileNotFoundError(f"Static directory not found at {static_dir}")
-    
+
     # Clean existing public directory
     if public_dir.exists():
         logging.info(f"Cleaning {public_dir.relative_to(project_root)}")
         shutil.rmtree(public_dir)
-    
+
     # Create fresh public directory
     public_dir.mkdir(exist_ok=True)
-    
+
     # Start recursive copy
     copy_static_recursive(static_dir, public_dir, project_root)
