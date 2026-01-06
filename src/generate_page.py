@@ -5,7 +5,7 @@ from extract_title import extract_title
 from markdown_to_html import markdown_to_html_node
 from compiler import copy_static
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     """
     Generate an HTML page from a markdown file using a template.
     
@@ -34,6 +34,8 @@ def generate_page(from_path, template_path, dest_path):
     # Replace placeholders in template
     final_html = template_content.replace("{{ Title }}", title)
     final_html = final_html.replace("{{ Content }}", html_content)
+    final_html = final_html.replace("href=\"/", "href=\"{basepath}")
+    final_html = final_html.replace("src=\"/", "src=\"{basepath}")
     
     # Ensure destination directory exists
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
@@ -43,7 +45,7 @@ def generate_page(from_path, template_path, dest_path):
         f.write(final_html)
 
 
-def generate_pages_recursive(dir_path_content: Path, template_path: Path, dest_dir_path: Path):
+def generate_pages_recursive(dir_path_content: Path, template_path: Path, dest_dir_path: Path, basepath: Path):
     """
     Recursively generate HTML pages from markdown files while preserving directory structure.
     
@@ -78,7 +80,8 @@ def generate_pages_recursive(dir_path_content: Path, template_path: Path, dest_d
             # Ensure destination subdirectories exist
             dest_file.parent.mkdir(parents=True, exist_ok=True)
             # Generate the HTML page
-            generate_page(str(entry), str(template_path), str(dest_file))
+            generate_page(str(entry), str(template_path), str(dest_file), basepath)
         elif entry.is_dir():
             # Recursively process subdirectories
-            generate_pages_recursive(entry, template_path, dest_dir_path / entry.name)
+            generate_pages_recursive(entry, template_path, dest_dir_path / entry.name, basepath)
+
