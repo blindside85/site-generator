@@ -34,8 +34,13 @@ def text_to_textnodes(text):
     nodes = split_nodes_link(nodes)
     
     # Split on markdown delimiters
+    # Process bold delimiters first (both ** and __)
     nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    nodes = split_nodes_delimiter(nodes, "__", TextType.BOLD)
+    # Then process italic delimiters (both * and _)
     nodes = split_nodes_delimiter(nodes, "*", TextType.ITALIC)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    # Finally process code delimiter
     nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
-    
+
     return nodes

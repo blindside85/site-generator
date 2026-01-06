@@ -27,6 +27,26 @@ class TestTextToTextNodes(unittest.TestCase):
         nodes = text_to_textnodes(text)
         self.assertEqual(len(nodes), 3)
         self.assertEqual(nodes[1].text_type, TextType.ITALIC)
+
+    def test_italic_text_underscore(self):
+        """Test conversion of italic text with underscore syntax"""
+        text = "Hello _world_!"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(len(nodes), 3)
+        self.assertEqual(nodes[0].text, "Hello ")
+        self.assertEqual(nodes[1].text, "world")
+        self.assertEqual(nodes[1].text_type, TextType.ITALIC)
+        self.assertEqual(nodes[2].text, "!")
+
+    def test_bold_text_underscore(self):
+        """Test conversion of bold text with underscore syntax"""
+        text = "Hello __world__!"
+        nodes = text_to_textnodes(text)
+        self.assertEqual(len(nodes), 3)
+        self.assertEqual(nodes[0].text, "Hello ")
+        self.assertEqual(nodes[1].text, "world")
+        self.assertEqual(nodes[1].text_type, TextType.BOLD)
+        self.assertEqual(nodes[2].text, "!")
     
     def test_code_text(self):
         """Test conversion of code text"""
@@ -57,7 +77,7 @@ class TestTextToTextNodes(unittest.TestCase):
         """Test conversion of complex markdown with multiple elements"""
         text = "This is **bold** with *italic* and `code` plus ![img](pic.jpg) and [link](url.com)"
         nodes = text_to_textnodes(text)
-        
+
         # Verify sequence of node types
         expected_types = [
             TextType.NORMAL,  # "This is "
@@ -71,7 +91,27 @@ class TestTextToTextNodes(unittest.TestCase):
             TextType.NORMAL,  # " and "
             TextType.LINK,    # "link"
         ]
-        
+
+        actual_types = [node.text_type for node in nodes]
+        self.assertEqual(actual_types, expected_types)
+
+    def test_mixed_emphasis_syntax(self):
+        """Test conversion of markdown with mixed asterisk and underscore syntax"""
+        text = "This is **bold** and __also bold__ with *italic* and _also italic_"
+        nodes = text_to_textnodes(text)
+
+        # Verify sequence of node types
+        expected_types = [
+            TextType.NORMAL,  # "This is "
+            TextType.BOLD,    # "bold"
+            TextType.NORMAL,  # " and "
+            TextType.BOLD,    # "also bold"
+            TextType.NORMAL,  # " with "
+            TextType.ITALIC,  # "italic"
+            TextType.NORMAL,  # " and "
+            TextType.ITALIC,  # "also italic"
+        ]
+
         actual_types = [node.text_type for node in nodes]
         self.assertEqual(actual_types, expected_types)
 
